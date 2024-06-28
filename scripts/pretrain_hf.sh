@@ -12,28 +12,27 @@
 PROMPT_VERSION=plain
 ########### DO NOT CHANGE ###########
 
-accelerate launch --config llava/train/train_mem.py \
+deepspeed --include localhost:0  llava/train/train_mem.py \
     --deepspeed ./scripts/zero2.json \
-    --model_name_or_path ./checkpoints/$MODEL_VERSION \
+    --model_name_or_path liuhaotian/llava-v1.5-7b \
     --version $PROMPT_VERSION \
-    --data_path /path/to/pretrain_data.json \
-    --image_folder /path/to/images \
+    --data_path EtashGuha/HungarianDocQA_IT \
     --vision_tower openai/clip-vit-large-patch14 \
     --tune_mm_mlp_adapter True \
     --mm_vision_select_layer -2 \
     --mm_use_im_start_end False \
     --mm_use_im_patch_token False \
     --bf16 True \
-    --output_dir ./checkpoints/llava-$MODEL_VERSION-pretrain \
-    --num_train_epochs 1 \
-    --per_device_train_batch_size 16 \
+    --output_dir ./checkpoints/llava-$MODEL_VERSION-pretrain-1 \
+    --num_train_epochs 50 \
+    --per_device_train_batch_size 2 \
     --per_device_eval_batch_size 4 \
     --gradient_accumulation_steps 1 \
     --evaluation_strategy "no" \
     --save_strategy "steps" \
     --save_steps 24000 \
     --save_total_limit 1 \
-    --learning_rate 2e-3 \
+    --learning_rate 2e-5 \
     --weight_decay 0. \
     --warmup_ratio 0.03 \
     --lr_scheduler_type "cosine" \
